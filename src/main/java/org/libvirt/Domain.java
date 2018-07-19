@@ -8,6 +8,7 @@ import org.libvirt.jna.CString;
 import org.libvirt.jna.DomainPointer;
 import org.libvirt.jna.DomainSnapshotPointer;
 import org.libvirt.jna.Libvirt;
+import org.libvirt.jna.LibvirtQemu;
 import org.libvirt.jna.SizeT;
 import org.libvirt.jna.virDomainBlockInfo;
 import org.libvirt.jna.virDomainBlockStats;
@@ -21,7 +22,9 @@ import org.libvirt.event.RebootListener;
 import org.libvirt.event.LifecycleListener;
 import org.libvirt.event.PMWakeupListener;
 import org.libvirt.event.PMSuspendListener;
+import org.libvirt.qemu.QemuCommand;
 import static org.libvirt.Library.libvirt;
+import static org.libvirt.Library.libvirtqemu;
 import static org.libvirt.ErrorHandler.processError;
 import static org.libvirt.ErrorHandler.processErrorIfZero;
 
@@ -1556,4 +1559,35 @@ public class Domain {
         return processError(libvirt.virDomainUpdateDeviceFlags(VDP, xml, flags));
     }
 
+    /**
+     * Send a Qemu Guest Agent command to a domain
+     *
+     * @param cmd
+     *            The command which has to be send
+     * @param timeout
+     *            The timeout for waiting on an answer. See QemuAgentFlags for more information.
+     * @param flags
+     *            Flags to be send
+     * @return String
+     * @throws LibvirtException
+     */
+    public String qemuAgentCommand(QemuCommand command) throws LibvirtException {
+        return this.qemuAgentCommand(command, 0);
+    }
+
+    /**
+     * Send a Qemu Guest Agent command to a domain
+     * @see <a href="http://wiki.qemu.org/Features/QAPI/GuestAgent">Qemu Documentation</a>
+     * @param command
+     *            The command which has to be send
+     * @param timeout
+     *            The timeout for waiting on an answer. See QemuAgentFlags for more information
+     * @return String
+     * @throws LibvirtException
+     */
+    public String qemuAgentCommand(QemuCommand command, int timeout) throws LibvirtException {
+        CString result = libvirtqemu.virDomainQemuAgentCommand(this.VDP, command.toString(), timeout, 0);
+        processError(result);
+        return result.toString();
+    }
 }

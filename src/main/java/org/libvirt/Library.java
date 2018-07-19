@@ -2,6 +2,7 @@ package org.libvirt;
 
 import org.libvirt.jna.Libvirt;
 import org.libvirt.jna.Libvirt.VirEventTimeoutCallback;
+import org.libvirt.jna.LibvirtQemu;
 import org.libvirt.jna.CString;
 import static org.libvirt.ErrorHandler.processError;
 
@@ -34,6 +35,7 @@ public final class Library {
         };
 
     final static Libvirt libvirt;
+    final static LibvirtQemu libvirtqemu;
 
     // an empty string array constant
     // prefer this over creating empty arrays dynamically.
@@ -47,6 +49,7 @@ public final class Library {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        libvirtqemu = LibvirtQemu.INSTANCE;
     }
 
     private Library() {}
